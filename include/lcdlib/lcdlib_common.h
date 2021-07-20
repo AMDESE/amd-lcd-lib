@@ -19,10 +19,14 @@
 #define LINE3   0x14
 #define LINE4   0x54
 
-/* Message type */
-#define POST_CODE   1
-#define BMC_IPADDR  2
-#define BMC_VER     3
+/* LCD Message type */
+typedef enum
+{
+	POST_CODE = 1,
+	FPGA_ERR,
+	BMC_VER,
+	BMC_IPADDR
+}LCD_msgType_t;
 
 static int  lcdlib_clearScreen(void);
 static int  lcdlib_setCursor(int line, int column);
@@ -30,6 +34,6 @@ static int  lcdlib_setCursorHome(void);
 
 int lcdlib_open_dev(int i2c_channel);
 int lcdlib_close_dev(void);
-int lcdlib_write_string(int msg_type, unsigned char *buffer, int str_len);
+int lcdlib_write_string(LCD_msgType_t msgType, unsigned char *buffer, int str_len);
 
 #endif  // INCLUDE_LCDLIB_COMMON_H_

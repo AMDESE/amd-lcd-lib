@@ -12,7 +12,7 @@ include(utils)
 
 set(LCDLIB "lcdlib")
 set(LCDLIB_COMPONENT "lib${LCDLIB}")
-set(LCDLIB_TARGET "${LCDLIB}32")
+set(LCDLIB_TARGET "${LCDLIB}")
 set(SRC_DIR "src/lcdlib")
 set(INC_DIR "include/lcdlib")
 
@@ -64,21 +64,14 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
 	"GENOA™ LCD display Interface library")
 endif()
 
-set(CPACK_PACKAGE_FILE_NAME "lcdlib_lib32-${BUILD_VERSION_STRING}")
+set(CPACK_PACKAGE_FILE_NAME "lcdlib-${BUILD_VERSION_STRING}")
 ## Verbose output.
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 ## Compiler flags
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fno-rtti -m64")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -msse2 -std=c++11 ")
-# Use this instead of above for 32 bit
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
-
-if ("${CMAKE_BUILD_TYPE}" STREQUAL Release)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
-else ()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -O0 -DDEBUG")
-endif ()
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -msse2 -std=c++11 ")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -fPIC")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(LCDLIB_SRC_LIST ${LCDLIB_SRC_LIST} "${SRC_DIR}/lcdlib_common.c")

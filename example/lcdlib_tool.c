@@ -37,7 +37,8 @@ int main(int argc, char **argv)
     unsigned char postcode[20];
     unsigned char bmcip[20];
     unsigned char bmcver[20];
-                         
+    LCD_msgType_t msgType = POST_CODE;
+
     int line = 1;
 
     if (getuid() !=0) {
@@ -50,28 +51,31 @@ int main(int argc, char **argv)
         printf("Printing Post Code...\n");
         for ( int i=0; i < 10; i++ ) {
             sprintf(postcode, "PostCode: %04X", ((rand() % 9000)+ 1000));
-            if ( lcdlib_write_string(POST_CODE, postcode, strlen(postcode) ) !=0 ) {
-                printf("Error : Post Code string write \n");
+            if ( lcdlib_write_string(msgType, postcode, strlen(postcode) ) !=0 ) {
+                printf("Error : Failed to display Post Code\n");
             }
             sleep(1);
         }
-    }   
+    } 
+
     sleep(2);                    
     printf("Printing BMC IP...\n");
     for ( int i=0; i < 10; i++ ) {
         sprintf(bmcip, "IP:19%d.168.245.17%d", i, i);
-        if ( lcdlib_write_string(BMC_IPADDR, bmcip, strlen(bmcip) ) !=0 ) {
-            printf("Error : Post Code string write \n");
+        msgType = BMC_IPADDR;
+        if ( lcdlib_write_string(msgType, bmcip, strlen(bmcip) ) !=0 ) {
+            printf("Error : Failed to display IP address\n");
         }
             sleep(1);
     }   
     sleep(2);
     printf("Printing BMC Version ...\n");
     sprintf(bmcver, "BMCver:2.11.00-dev");
-    if ( lcdlib_write_string(BMC_VER, bmcver, strlen(bmcver) ) !=0 ) {
-        printf("Error : Post Code string write \n");
+    msgType = BMC_VER;
+    if ( lcdlib_write_string(msgType, bmcver, strlen(bmcver) ) !=0 ) {
+        printf("Error :Failed to display BMC Version\n");
     }
-    
+
     if  (lcdlib_close_dev() != 0 ) {
         printf("Error : failed to close LCD device\n");
         return (-1);

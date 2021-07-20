@@ -80,13 +80,13 @@ static int lcdlib_clearScreen(void)
 /*
  * Write a string on the screen
  */
-int  lcdlib_write_string(int msg_type, unsigned char *buffer, int str_len)
+int  lcdlib_write_string(LCD_msgType_t msgType, unsigned char *buffer, int str_len)
 {
     int column = 0;
     if (fd < 0) 
         return (-1);
 
-    if (lcdlib_setCursor(msg_type, column) !=0)
+    if (lcdlib_setCursor((int)msgType, column) !=0)
         return (-1);
 
     usleep(1000);

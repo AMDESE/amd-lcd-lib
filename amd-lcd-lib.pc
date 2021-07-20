@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=/usr/lib
+includedir=/usr/include
+
+Name: amd-lcd-lib
+Description: AMD LCD Display library interface
+Requires.private:
+Version: 1.0.0
+~                                           
