@@ -7,6 +7,10 @@
 #define LCD_MUX_ADDR    0x70    // 0x70 is 7-bit MUX address 
 #define LCD_DEV_ADDR    0x28    // 0x28 is 7-bit LCD DEV address
 
+/* MUX commands */
+#define MUX_REG         0x00
+#define MUX_ENABLE_LCD  0x01    // LCD is on the 1st Port in Genoa
+
 /* LCD commands */
 #define CMD_PREFIX      0xFE
 #define CMD_CUR_HOME    0x46    // set cursor at home
@@ -23,9 +27,9 @@
 typedef enum
 {
 	POST_CODE = 1,
-	FPGA_ERR,
-	BMC_VER,
-	BMC_IPADDR
+	BMC_IPADDR,
+	FW_VER,
+	HOST_NAME
 }LCD_msgType_t;
 
 static int  lcdlib_clearScreen(void);
