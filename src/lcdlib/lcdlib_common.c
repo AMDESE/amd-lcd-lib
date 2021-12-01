@@ -80,13 +80,13 @@ static int lcdlib_clearScreen(void)
 /*
  * Write a string on the screen
  */
-int  lcdlib_write_string(int msg_type, unsigned char *buffer, int str_len)
+int  lcdlib_write_string(LCD_msgType_t msgType, unsigned char *buffer, int str_len)
 {
     int column = 0;
     if (fd < 0) 
         return (-1);
 
-    if (lcdlib_setCursor(msg_type, column) !=0)
+    if (lcdlib_setCursor((int)msgType, column) !=0)
         return (-1);
 
     usleep(1000);
@@ -116,8 +116,20 @@ int lcdlib_open_dev(int i2c_bus)
             printf("Error: Failed to open i2c device\n");
             return (-1);
         }
-        /* Set LCD i2c device address */
 
+	// Set MUX i2c device address
+        if (ioctl(fd, I2C_SLAVE, LCD_MUX_ADDR) < 0) {
+            printf("Error: Failed setting Mux i2c dev addr 0x%x\n", LCD_MUX_ADDR);
+            return (-1);
+        }
+
+        // Enable LCD Bus in Mux
+        if (i2c_smbus_write_byte_data(fd, MUX_REG, MUX_ENABLE_LCD) != 0) {
+            printf("Error: Failed to enable LCD bus in Mux\n");
+            return (-1);
+        }
+
+	/* Set LCD i2c device address */
         if (ioctl(fd, I2C_SLAVE, LCD_DEV_ADDR) < 0) {
             printf("Error: Failed setting i2c dev addr\n");
             return (-1);
