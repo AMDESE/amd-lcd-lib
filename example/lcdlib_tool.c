@@ -44,6 +44,13 @@ static void rerun_sudo(int argc, char **argv)
         args[i + 1] = NULL;
         execvp("sudo", args);
 }
+
+static void system_check(char * tmp)
+{
+    if (system(tmp) < 0 )
+        printf("system call failed for %s\n", tmp);
+}
+
 /**
 Main program.
 @param argc number of command line parameters
@@ -52,12 +59,13 @@ Main program.
 int main(int argc, char **argv)
 {
     FILE *fp;
-    char line[LCD_MAX_LINE+3][LCD_MAX_CHAR+10];
+    char line[LCD_MAX_LINE+3][40];
     char tmp1[20], tmp2[200];
     int i=0;
     int line_fw_ver_index = BMC_VER_INDEX;
     int size  = 0;
     int pc_index = 1;
+    int ret;
     union {
       unsigned int  postcode;
       unsigned char bytes[4];
@@ -70,25 +78,25 @@ int main(int argc, char **argv)
 
     /* create LCD Config file */
     sprintf(tmp2, "rm %s", LCD_FILE);
-    system(tmp2);
+    system_check(tmp2);
     sprintf(tmp2, "ipmitool lan print |grep \"IP Address  \"| cut -c 27-46 >> %s ", LCD_FILE);
     print_debug("cmd line %s\n", tmp2);
-    system(tmp2);
+    system_check(tmp2);
     sprintf(tmp2, "cat /etc/os-release |grep \"VERSION_ID\"| cut -c 12-31 >> %s ", LCD_FILE);
     print_debug("cmd line %s\n", tmp2);
-    system(tmp2);
+    system_check(tmp2);
     sprintf(tmp2, "ipmitool mc  getsysinfo system_name >> %s ", LCD_FILE);
     print_debug("cmd line %s\n", tmp2);
-    system(tmp2);
+    system_check(tmp2);
     sprintf(tmp2, "busctl get-property xyz.openbmc_project.Software.BMC.Updater /xyz/openbmc_project/software/bios_active xyz.openbmc_project.Software.Version Version |grep s| cut -c 3-22 >> %s ", LCD_FILE);
     print_debug("cmd line %s\n", tmp2);
-    system(tmp2);
+    system_check(tmp2);
     sprintf(tmp2, "busctl get-property xyz.openbmc_project.Software.BMC.Updater /xyz/openbmc_project/software/hpm_fpga_active xyz.openbmc_project.Software.Version Version |grep s| cut -c 3-22 >> %s ", LCD_FILE);
     print_debug("cmd line %s\n", tmp2);
-    system(tmp2);
+    system_check(tmp2);
     sprintf(tmp2, "busctl get-property xyz.openbmc_project.Software.BMC.Updater /xyz/openbmc_project/software/scm_fpga_active xyz.openbmc_project.Software.Version Version |grep s| cut -c 3-22 >> %s ", LCD_FILE);
     print_debug("cmd line %s\n", tmp2);
-    system(tmp2);
+    system_check(tmp2);
 
     /* Open LCD config file */
     fp = fopen(LCD_FILE, "r");
@@ -104,25 +112,28 @@ int main(int argc, char **argv)
 
     /* Read LCD Config file */
     for (i=1; i < LCD_MAX_LINE+3; i++) {
-	fscanf( fp, "%s", tmp2);
+	strcpy(tmp1, "           ");
+	ret = fscanf( fp, "%s", tmp1);
+	if (ret == EOF)
+	    break;
 	switch(i) {
 	case 1:
-	    sprintf(line[i], "IP: %s ", tmp2);
+	    sprintf(line[i], "IP: %s ", tmp1);
 	    break;
         case 2:
-            sprintf(line[i], "BMC: %s ", tmp2);
+            sprintf(line[i], "BMC: %12s ", tmp1);
             break;
         case 3:
-            sprintf(line[i], "HOST: %s ", tmp2);
+            sprintf(line[i], "HOST: %s ", tmp1);
             break;
         case 4:
-            sprintf(line[i], "BIOS: %s     ", tmp2);
+            sprintf(line[i], "BIOS: %12s ", tmp1);
             break;
         case 5:
-            sprintf(line[i], "HPM_FPGA: %s     ", tmp2);
+            sprintf(line[i], "HPM_FPGA: %9s ", tmp1);
             break;
         case 6:
-            sprintf(line[i], "SCM_FPGA: %s     ", tmp2);
+            sprintf(line[i], "SCM_FPGA: %9s ", tmp1);
             break;
         default:
 	    break;
@@ -179,18 +190,32 @@ int main(int argc, char **argv)
 	fp =  fopen(PC_INDEX, "r");
 	if(fp == NULL)
 	    continue;
-	fscanf(fp, "%s", tmp2);
-	while(strstr(tmp2, "value0") == 0){
-	    fscanf(fp, "%s", tmp2);
+	ret = fscanf(fp, "%s", tmp2);
+	if(ret == EOF ) {
+	    fclose(fp);
+	    continue;
 	}
-	fscanf(fp, "%s", tmp1);
+	while(strstr(tmp2, "value0") == 0){
+	    ret = fscanf(fp, "%s", tmp2);
+	    if(ret == EOF)
+		break;
+	}
+	ret = fscanf(fp, "%s", tmp1);
+	if(ret == EOF ) {
+            fclose(fp);
+            continue;
+        }
 	fclose(fp);
 	print_debug("PC Index %s\n", tmp1);
+	sprintf(tmp2, "%s%s", PC_FILE_PATH, tmp1);
+	fp = fopen(tmp2, "r");
+	if(fp == NULL)
+            continue;
 	sprintf(tmp2, "rm %s", PC_FILE);
-	system(tmp2);
+	system_check(tmp2);
 	sprintf(tmp2, "tail %s%s |grep \"tuple_element0\"|cut -c 34-44 >> %s ", PC_FILE_PATH, tmp1, PC_FILE);
 	print_debug("cmd line %s\n", tmp2);
-	system(tmp2);
+	system_check(tmp2);
 	fp =  fopen(PC_FILE, "r");
         if(fp == NULL)
             continue;
