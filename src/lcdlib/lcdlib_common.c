@@ -1,3 +1,4 @@
+#include <lcdlib/lcdlib_common.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,7 +6,6 @@
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
 #include <i2c/smbus.h>
-#include <lcdlib/lcdlib_common.h>
 
 static int fd = -1;
 

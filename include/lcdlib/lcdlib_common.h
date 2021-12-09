@@ -1,6 +1,11 @@
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
 #ifndef INCLUDE_LCDLIB_COMMON_H_
 #define INCLUDE_LCDLIB_COMMON_H_
+
+
 
 #define FILEPATHSIZE 64 
 /*  i2c device addr */
@@ -41,3 +46,6 @@ int lcdlib_close_dev(void);
 int lcdlib_write_string(LCD_msgType_t msgType, unsigned char *buffer, int str_len);
 
 #endif  // INCLUDE_LCDLIB_COMMON_H_
+#ifdef __cplusplus
+}
+#endif
