@@ -63,7 +63,7 @@ static int  lcdlib_setCursorHome(void)
  *Clear LCD screen
  *
  */
-static int lcdlib_clearScreen(void)
+int lcdlib_clearScreen(void)
 {
     if (fd < 0)
         return (-1);
@@ -102,14 +102,14 @@ int  lcdlib_write_string(LCD_msgType_t msgType, unsigned char *buffer, int str_l
 /*
  * Initialization step, where Opening the i2c device file.
  */
-int lcdlib_open_dev(int i2c_bus)
+int lcdlib_open_dev(void)
 {
     int8_t *buffer;
     int data;
     char i2c_devname[FILEPATHSIZE];
 
 
-    snprintf(i2c_devname, FILEPATHSIZE, "/dev/i2c-%d", i2c_bus);
+    snprintf(i2c_devname, FILEPATHSIZE, "/dev/i2c-%d", LCD_I2C_BUS);
     if (fd < 0) {
         fd = open(i2c_devname, O_RDWR);
         if (fd < 0) {
@@ -118,26 +118,19 @@ int lcdlib_open_dev(int i2c_bus)
         }
 
 	// Set MUX i2c device address
-        if (ioctl(fd, I2C_SLAVE, LCD_MUX_ADDR) < 0) {
+        if (ioctl(fd, I2C_SLAVE, LCD_MUX_ADDR) >= 0) {
+            // Enable LCD Bus in Mux
+            if (i2c_smbus_write_byte_data(fd, MUX_REG, MUX_ENABLE_LCD) != 0)
+                printf("Error: Failed to enable LCD bus in Mux\n");
+        }
+	else
             printf("Error: Failed setting Mux i2c dev addr 0x%x\n", LCD_MUX_ADDR);
-            return (-1);
-        }
-
-        // Enable LCD Bus in Mux
-        if (i2c_smbus_write_byte_data(fd, MUX_REG, MUX_ENABLE_LCD) != 0) {
-            printf("Error: Failed to enable LCD bus in Mux\n");
-            return (-1);
-        }
 
 	/* Set LCD i2c device address */
         if (ioctl(fd, I2C_SLAVE, LCD_DEV_ADDR) < 0) {
             printf("Error: Failed setting i2c dev addr\n");
             return (-1);
         }
-
-        /* Clear screen */
-        if (lcdlib_clearScreen() !=0 )
-            printf("Error: Failed to clear the screen\n");
     }
     else {
         printf("Error: failed to open LCD device\n");

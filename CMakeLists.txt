@@ -84,11 +84,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(LCDLIB_SRC_LIST ${LCDLIB_SRC_LIST} "${SRC_DIR}/lcdlib_common.c")
 
 
-set(LCD_TOOL "lcdlib_tool")
+#set(LCD_TOOL "lcdlib_tool")
 
-add_executable(${LCD_TOOL} "example/lcdlib_tool.c")
+#add_executable(${LCD_TOOL} "example/lcdlib_tool.c")
 
-target_link_libraries(${LCD_TOOL} ${LCDLIB_TARGET})
+#target_link_libraries(${LCD_TOOL} ${LCDLIB_TARGET})
 
 add_library(${LCDLIB_TARGET} SHARED ${LCDLIB_SRC_LIST} ${LCD_INC_LIST})
 target_link_libraries(${LCDLIB_TARGET} pthread rt m i2c)
