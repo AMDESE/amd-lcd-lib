@@ -26,6 +26,10 @@
 #define LINE3   0x14
 #define LINE4   0x54
 
+/* misc */
+#define LCD_MAX_CHAR  20
+#define LCD_MAX       200
+
 /* LCD Message type */
 typedef enum
 {
