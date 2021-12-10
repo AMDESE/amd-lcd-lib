@@ -1,14 +1,12 @@
-
 #ifdef __cplusplus
  extern "C" {
 #endif
 #ifndef INCLUDE_LCDLIB_COMMON_H_
 #define INCLUDE_LCDLIB_COMMON_H_
 
-
-
 #define FILEPATHSIZE 64 
 /*  i2c device addr */
+#define LCD_I2C_BUS     1       // LCD virtual i2c bus
 #define LCD_MUX_ADDR    0x70    // 0x70 is 7-bit MUX address 
 #define LCD_DEV_ADDR    0x28    // 0x28 is 7-bit LCD DEV address
 
@@ -33,17 +31,17 @@ typedef enum
 {
 	POST_CODE = 1,
 	BMC_IPADDR,
-	FW_VER,
-	HOST_NAME
+	BMC_VER,
+	BIOS_VER
 }LCD_msgType_t;
 
-static int  lcdlib_clearScreen(void);
 static int  lcdlib_setCursor(int line, int column);
 static int  lcdlib_setCursorHome(void);
 
-int lcdlib_open_dev(int i2c_channel);
+int lcdlib_open_dev(void);
 int lcdlib_close_dev(void);
 int lcdlib_write_string(LCD_msgType_t msgType, unsigned char *buffer, int str_len);
+int lcdlib_clearScreen(void);
 
 #endif  // INCLUDE_LCDLIB_COMMON_H_
 #ifdef __cplusplus
