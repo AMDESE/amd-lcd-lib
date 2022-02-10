@@ -30,6 +30,15 @@
 #define LCD_MAX_CHAR  20
 #define LCD_MAX       200
 
+/* Error Code */
+#define LCD_ERR_OPEN         0x80
+#define LCD_ERR_OPEN_I2C     0x81
+#define LCD_ERR_SET_CURSOR   0x82
+#define LCD_ERR_BAD_PARAM    0x83
+#define LCD_ERR_CLEAR_SCREEN 0x84
+#define LCD_ERR_WRITE        0x85
+#define LCD_ERR_IOCTL        0x86
+
 /* LCD Message type */
 typedef enum
 {
