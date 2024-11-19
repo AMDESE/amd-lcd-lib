@@ -60,8 +60,14 @@ if (NOT DEFINED CPACK_PACKAGE_CONTACT)
 endif()
 
 if (NOT DEFINED CPACK_PACKAGE_DESCRIPTION_SUMMARY)
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
-	"GENOA™ LCD display Interface library")
+    # Conditionally set the description summary based on the selected version
+    if (USE_OLED_VERSION)
+        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
+            "SP7 LCD display Interface library")
+    else()
+        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
+            "GENOA™ LCD display Interface library")
+    endif()
 endif()
 
 set(CPACK_PACKAGE_FILE_NAME "lcdlib_lib32-${BUILD_VERSION_STRING}")
@@ -81,7 +87,24 @@ else ()
 endif ()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-set(LCDLIB_SRC_LIST ${LCDLIB_SRC_LIST} "${SRC_DIR}/lcdlib_common.c")
+# Conditionally include source and header files based on the selected version
+if (USE_OLED_VERSION)
+    set(LCDLIB_SRC_LIST
+        "${SRC_DIR}/lcdlib_common_oled.c"
+    )
+    set(LCD_INC_LIST
+        "${INC_DIR}/lcdlib_common_oled.h"
+    )
+    message(STATUS "Building the OLED version of lcdlib")
+else()
+    set(LCDLIB_SRC_LIST
+        "${SRC_DIR}/lcdlib_common.c"
+    )
+    set(LCD_INC_LIST
+        "${INC_DIR}/lcdlib_common.h"
+    )
+    message(STATUS "Building the legacy version of lcdlib")
+endif()
 
 
 #set(LCD_TOOL "lcdlib_tool")
